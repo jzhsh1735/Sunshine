@@ -6,8 +6,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
-public class SettingActivity extends PreferenceActivity
-        implements Preference.OnPreferenceChangeListener {
+public class SettingActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
 
     private void bindPreferenceSummaryToValue(Preference preference) {
         preference.setOnPreferenceChangeListener(this);
