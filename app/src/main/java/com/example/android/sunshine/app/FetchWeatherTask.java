@@ -48,6 +48,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             int locationIdIndex = locationCursor.getColumnIndex(LocationEntry._ID);
             locationId = locationCursor.getLong(locationIdIndex);
         } else {
+            Log.d(LOG_TAG, "Add Location: " + locationSetting + " " + cityName + " " + lat + " " + lon);
+
             ContentValues locationValues = new ContentValues();
             locationValues.put(LocationEntry.COLUMN_CITY_NAME, cityName);
             locationValues.put(LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
