@@ -3,13 +3,18 @@ package com.example.android.sunshine.app;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 public class ForecastAdapter extends CursorAdapter {
+
+    private static final String LOG_TAG = ForecastAdapter.class.getSimpleName();
 
     private static final int VIEW_TYPE_COUNT = 2;
 
@@ -68,16 +73,24 @@ public class ForecastAdapter extends CursorAdapter {
 
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         int viewType = getItemViewType(cursor.getPosition());
+        int fallbackIconId;
+        String url;
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
-                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(weatherId);
                 break;
             }
-            case VIEW_TYPE_FUTURE_DAY: {
-                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
+            default: {
+                fallbackIconId = Utility.getIconResourceForWeatherCondition(weatherId);
                 break;
             }
         }
+        Glide.with(context)
+                .load(url = Utility.getArtUrlForWeatherCondition(context, weatherId))
+                .error(fallbackIconId)
+                .crossFade()
+                .into(viewHolder.iconView);
+        Log.d(LOG_TAG, url);
 
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
