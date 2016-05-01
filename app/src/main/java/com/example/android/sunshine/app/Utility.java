@@ -378,4 +378,15 @@ public class Utility {
         }
         return null;
     }
+
+    public static String getFullFriendlyDayString(Context context, long dateInMillis) {
+        return String.format(context.getString(R.string.format_full_friendly_date),
+                getDayName(context, dateInMillis), getFormattedMonthDay(context, dateInMillis));
+    }
+
+    public static boolean usingLocalGraphics(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String sunshineArtPack = context.getString(R.string.pref_art_pack_sunshine);
+        return prefs.getString(context.getString(R.string.pref_art_pack_key), sunshineArtPack).equals(sunshineArtPack);
+    }
 }

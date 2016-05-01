@@ -5,8 +5,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,17 +35,10 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         super.onCreate(savedInstanceState);
         mLocation = Utility.getPreferredLocation(this);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if (findViewById(R.id.weather_detail_container) != null) {
             mTwoPane = true;
@@ -113,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     }
 
     @Override
-    public void onItemSelected(Uri uri) {
+    public void onItemSelected(Uri uri, ForecastAdapter.ForecastAdapterViewHolder holder) {
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.DETAIL_URI, uri);
@@ -126,7 +120,9 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class).setData(uri);
-            startActivity(intent);
+            ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+                    new Pair<View, String>(holder.mIconView, getString(R.string.detail_icon_transition_name)));
+            ActivityCompat.startActivity(this, intent, activityOptionsCompat.toBundle());
         }
     }
 
