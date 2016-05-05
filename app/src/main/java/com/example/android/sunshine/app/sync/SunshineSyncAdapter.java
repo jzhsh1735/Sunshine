@@ -34,6 +34,7 @@ import com.example.android.sunshine.app.MainActivity;
 import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
+import com.example.android.sunshine.app.muzei.WeatherMuzeiSource;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +54,7 @@ import java.util.concurrent.ExecutionException;
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
+    public static final String ACTION_DATA_UPDATED = "com.example.android.sunshine.app.ACTION_DATA_UPDATED";
 
     private static final int WEATHER_NOTIFICATION_ID = 3004;
 
@@ -255,9 +257,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
-                        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+                        new String[]{Long.toString(dayTime.setJulianDay(julianStartDay - 1))});
 
                 notifyWeather();
+                updateWidget();
+                updateMuzei();
             }
 
             Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
@@ -379,6 +383,19 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                     editor.commit();
                 }
             }
+        }
+    }
+
+    private void updateWidget() {
+        Context context = getContext();
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED).setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
+    }
+
+    private void updateMuzei() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Context context = getContext();
+            context.startService(new Intent(ACTION_DATA_UPDATED).setClass(context, WeatherMuzeiSource.class));
         }
     }
 
